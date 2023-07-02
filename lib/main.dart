@@ -79,6 +79,27 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  String formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays >= 2) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays >= 1) {
+      return '1 day ago';
+    } else if (difference.inHours >= 2) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inHours >= 1) {
+      return '1 hour ago';
+    } else if (difference.inMinutes >= 2) {
+      return '${difference.inMinutes} minutes ago';
+    } else if (difference.inMinutes >= 1) {
+      return '1 minute ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,7 +192,8 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     Row(
                                       children: [
-                                        Text("1 day ago"),
+                                        Text(formatDateTime(
+                                            snapshot.data[index].postedOn)),
                                         SizedBox(
                                           width: 20,
                                         ),
@@ -297,6 +319,8 @@ class _SelectedJobChipState extends State<SelectedJobChip> {
                 setState(() {
                   widget.selectedKeys.remove(key);
                 });
+
+                setState(() {});
               },
               label: Text(key),
               // Customize the chip as needed
