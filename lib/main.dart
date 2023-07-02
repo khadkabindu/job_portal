@@ -50,7 +50,6 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         jobs = data;
       });
-      print("Data aayo hai data: $data");
     } catch (error) {
       print('Error fetching data: $error');
     }
@@ -65,9 +64,20 @@ class _HomePageState extends State<HomePage> {
     return uniqueKeywords.toList();
   }
 
-  Set<String> selectedValues = {};
   bool isTapped = false;
   List<Map<String, dynamic>> filteredData = [];
+
+  List<String> selectedKeys = [];
+
+  handleKeywordTap(String p1) {
+    setState(() {
+      if (selectedKeys.contains(p1)) {
+        selectedKeys.remove(p1);
+      } else {
+        selectedKeys.add(p1);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,33 +91,13 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 40),
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              height: 100,
-              child: Row(
-                children: selectedValues
-                    .map(
-                      (value) => Chip(
-                        onDeleted: () {
-                          setState(() {
-                            selectedValues.remove(value);
-                          });
-                        },
-                        label: Text(value),
-                      ),
-                    )
-                    .toList(),
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
-              ),
-            ),
+            SelectedJobChip(selectedKeys),
             const SizedBox(
               height: 10,
             ),
             JobChip(
               jobTags(jobs),
+              onKeywordTap: handleKeywordTap,
             ),
             const SizedBox(
               height: 10,
@@ -139,45 +129,27 @@ class _HomePageState extends State<HomePage> {
                                           snapshot.data[index].keywords.length,
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder: (context, idx) {
-                                        List<bool> selectedStates =
-                                            List.generate(snapshot.data.length,
-                                                (index) => false);
                                         return Row(
                                           children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  selectedValues.add(snapshot
-                                                      .data[index]
-                                                      .keywords[idx]);
-                                                  selectedStates[idx] =
-                                                      !selectedStates[idx];
-                                                });
-                                              },
-                                              child: Container(
-                                                height: 30,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4),
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  snapshot.data[index]
-                                                      .keywords[idx],
-                                                  style: TextStyle(
-                                                      color: selectedStates[idx]
-                                                          ? Colors.white
-                                                          : Color(0xff6A9EA0),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                  color: selectedStates[idx]
-                                                      ? const Color(0xff6A9EA0)
-                                                      : const Color(0xffebf3f3),
-                                                ),
+                                            Container(
+                                              height: 30,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                snapshot
+                                                    .data[index].keywords[idx],
+                                                style: TextStyle(
+                                                    color: Color(0xff6A9EA0),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                color: const Color(0xffebf3f3),
                                               ),
                                             ),
                                             const SizedBox(
@@ -224,8 +196,6 @@ class _HomePageState extends State<HomePage> {
                 return const CircularProgressIndicator();
               },
             ),
-
-
           ],
         ),
       ),
@@ -235,8 +205,9 @@ class _HomePageState extends State<HomePage> {
 
 class JobChip extends StatefulWidget {
   final List<String> jobTags;
+  final Function(String) onKeywordTap;
 
-  JobChip(this.jobTags);
+  JobChip(this.jobTags, {required this.onKeywordTap});
 
   @override
   State<JobChip> createState() => _JobChipState();
@@ -267,13 +238,15 @@ class _JobChipState extends State<JobChip> {
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         itemBuilder: (context, index) {
+          final keyword = widget.jobTags[index];
+
           return Row(
             children: [
               GestureDetector(
                 onTap: () {
                   setState(() {
                     isSelected[index] = !isSelected[index];
-                    print(isSelected[index]);
+                    widget.onKeywordTap(keyword);
                   });
                 },
                 child: Chip(
@@ -295,6 +268,41 @@ class _JobChipState extends State<JobChip> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class SelectedJobChip extends StatefulWidget {
+  final List<String> selectedKeys;
+
+  SelectedJobChip(this.selectedKeys);
+
+  @override
+  State<SelectedJobChip> createState() => _SelectedJobChipState();
+}
+
+class _SelectedJobChipState extends State<SelectedJobChip> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      color: Colors.white,
+      child: Row(
+        children: widget.selectedKeys.map((key) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Chip(
+              onDeleted: () {
+                setState(() {
+                  widget.selectedKeys.remove(key);
+                });
+              },
+              label: Text(key),
+              // Customize the chip as needed
+            ),
+          );
+        }).toList(),
       ),
     );
   }
