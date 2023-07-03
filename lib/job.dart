@@ -1,5 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
 class Job {
   final String position;
   final String timing;
@@ -19,7 +17,9 @@ class Job {
         keywords = json['keywords'],
         company = json['company'],
         companyLogo = json['company_logo'],
-        postedOn = DateTime.fromMicrosecondsSinceEpoch(json['posted_on']*1000);
+        postedOn =
+            DateTime.fromMicrosecondsSinceEpoch(json['posted_on'] * 1000);
+
   @override
   String toString() {
     return "position: $position, company: $company, posted_on: $postedOn";
