@@ -31,6 +31,8 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+enum ApiState { initial, loading, error, success }
+
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
@@ -42,6 +44,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Job> jobs = [];
+  ApiState state = ApiState.initial;
+  String error = "";
 
   @override
   void initState() {
@@ -51,36 +55,37 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchData() async {
     try {
+      setState(() {
+        state = ApiState.loading;
+      });
       List<Job> data = await Api.getData();
       setState(() {
         jobs = data;
+        state = ApiState.success;
       });
-    } catch (error) {
-      print('Error fetching data: $error');
+    } catch (e) {
+      setState(() {
+        state = ApiState.error;
+        error = e.toString();
+      });
+      print('Error fetching data: $e');
     }
   }
 
   List<String> jobTags(List<Job> jobs) {
-    Set<String> uniqueKeywords = Set<String>();
+    Set<String> uniqueKeywords = {};
 
     for (Job job in jobs) {
-      uniqueKeywords.addAll((job.keywords as List<dynamic>).cast<String>());
+      uniqueKeywords.addAll(job.keywords.toList());
     }
     return uniqueKeywords.toList();
   }
 
-  bool isTapped = false;
-  List<Map<String, dynamic>> filteredData = [];
+  Set<String> selectedKeys = {};
 
-  List<String> selectedKeys = [];
-
-  handleKeywordTap(String p1) {
+  handleKeywordTap(String keyword) {
     setState(() {
-      if (selectedKeys.contains(p1)) {
-        selectedKeys.remove(p1);
-      } else {
-        selectedKeys.add(p1);
-      }
+      selectedKeys.add(keyword);
     });
   }
 
@@ -88,7 +93,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       selectedKeys.remove(key);
     });
-    print("----- Triggered-----");
   }
 
   @override
@@ -99,30 +103,43 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         backgroundColor: const Color(0xff5ea5a6),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 40),
-        child: Column(
-          children: [
-            SelectedJobChip(
-              selectedKeys: selectedKeys,
-              onChipDeleted: handleChipDelete,
+      body: state == ApiState.error
+          ? Center(
+              child: Text(error),
+            )
+          : Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 100, vertical: 40),
+              child: state == ApiState.loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        SelectedJobChip(
+                          selectedKeys: selectedKeys.toList(),
+                          onChipDeleted: handleChipDelete,
+                          onClear: () {
+                            setState(() {
+                              selectedKeys.clear();
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        JobChip(
+                          jobTags(jobs),
+                          onKeywordTap: handleKeywordTap,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        JobTile(
+                          textValue: selectedKeys.toList(),
+                          jobs: jobs,
+                        ),
+                      ],
+                    ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            JobChip(
-              jobTags(jobs),
-              onKeywordTap: handleKeywordTap,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            JobTile(
-              textValue: selectedKeys,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

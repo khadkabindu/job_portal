@@ -2,7 +2,7 @@ class Job {
   final String position;
   final String timing;
   final String location;
-  final List<dynamic>? keywords;
+  final List<String> keywords;
   final String company;
   final String companyLogo;
   final DateTime postedOn;
@@ -14,7 +14,7 @@ class Job {
       : position = json['position'],
         timing = json['timing'],
         location = json['location'],
-        keywords = json['keywords'],
+        keywords = List<String>.from(json['keywords'] as List),
         company = json['company'],
         companyLogo = json['company_logo'],
         postedOn =

@@ -42,19 +42,15 @@ class _JobChipState extends State<JobChip> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    isSelected[index] = !isSelected[index];
                     widget.onKeywordTap(keyword);
                   });
                 },
                 child: Chip(
-                  backgroundColor: isSelected[index]
-                      ? Color(0xff6A9EA0)
-                      : Colors.transparent,
                   label: Text(
                     widget.jobTags[index],
-                    style: TextStyle(
+                    style: const TextStyle(
                       color:
-                      isSelected[index] ? Colors.white : Color(0xff6A9EA0),
+                        Color(0xff6A9EA0),
                     ),
                   ),
                 ),
