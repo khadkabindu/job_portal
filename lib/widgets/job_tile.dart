@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../job.dart';
+import '../utils/date_time.dart';
 
 class JobTile extends StatefulWidget {
   final List<Job> jobs;
@@ -12,26 +13,6 @@ class JobTile extends StatefulWidget {
 }
 
 class _JobTileState extends State<JobTile> {
-  String formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inDays >= 2) {
-      return '${difference.inDays} days ago';
-    } else if (difference.inDays >= 1) {
-      return '1 day ago';
-    } else if (difference.inHours >= 2) {
-      return '${difference.inHours} hours ago';
-    } else if (difference.inHours >= 1) {
-      return '1 hour ago';
-    } else if (difference.inMinutes >= 2) {
-      return '${difference.inMinutes} minutes ago';
-    } else if (difference.inMinutes >= 1) {
-      return '1 minute ago';
-    } else {
-      return 'Just now';
-    }
-  }
   bool jobContainsSelectedKeywords(Job job, List<String> selectedKeywords) {
     for (final keyword in selectedKeywords) {
       if (!job.keywords!.contains(keyword)) {
@@ -106,7 +87,7 @@ class _JobTileState extends State<JobTile> {
                       ),
                       Row(
                         children: [
-                          Text(formatDateTime(filteredJobs[index].postedOn)),
+                          Text(DateTimeUtil.formatDateTime(filteredJobs[index].postedOn)),
                           SizedBox(
                             width: 20,
                           ),
