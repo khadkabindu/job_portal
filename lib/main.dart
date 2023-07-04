@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
-  get selectedKeys => null;
+  List<String> selectedKeys = [];
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -84,6 +84,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void handleChipDelete(String key) {
+    setState(() {
+      selectedKeys.remove(key);
+    });
+    print("----- Triggered-----");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +103,10 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 40),
         child: Column(
           children: [
-            SelectedJobChip(selectedKeys),
+            SelectedJobChip(
+              selectedKeys: selectedKeys,
+              onChipDeleted: handleChipDelete,
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -107,7 +117,9 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 10,
             ),
-            JobTile(),
+            JobTile(
+              textValue: selectedKeys,
+            ),
           ],
         ),
       ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import '../job.dart';
 
 class JobTile extends StatefulWidget {
-  const JobTile({Key? key}) : super(key: key);
+  final List<String> textValue;
+  const JobTile({required this.textValue});
 
   @override
   State<JobTile> createState() => _JobTileState();
@@ -33,13 +35,19 @@ class _JobTileState extends State<JobTile> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> selectedValues = widget.textValue;
+    print("--------$selectedValues--------------");
     return FutureBuilder(
       future: Api.getData(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          final List<Job> filteredJobs = snapshot.data
+              .where((job) =>
+              jobContainsSelectedKeywords(job, selectedValues))
+              .toList();
           return Expanded(
             child: ListView.builder(
-                itemCount: snapshot.data.length,
+                itemCount: filteredJobs.length,
                 itemBuilder: (context, index) {
                   return Container(
                     padding: const EdgeInsets.all(8),
@@ -51,12 +59,12 @@ class _JobTileState extends State<JobTile> {
                     child: ListTile(
                         leading: CircleAvatar(
                           backgroundImage:
-                              NetworkImage(snapshot.data[index].companyLogo),
+                          NetworkImage(filteredJobs[index].companyLogo),
                         ),
                         trailing: SizedBox(
                           width: 200,
                           child: ListView.builder(
-                              itemCount: snapshot.data[index].keywords.length,
+                              itemCount: filteredJobs[index].keywords!.length,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, idx) {
                                 return Row(
@@ -67,7 +75,7 @@ class _JobTileState extends State<JobTile> {
                                           horizontal: 8, vertical: 4),
                                       alignment: Alignment.center,
                                       child: Text(
-                                        snapshot.data[index].keywords[idx],
+                                        filteredJobs[index].keywords![idx],
                                         style: TextStyle(
                                             color: Color(0xff6A9EA0),
                                             fontWeight: FontWeight.bold),
@@ -84,27 +92,27 @@ class _JobTileState extends State<JobTile> {
                                 );
                               }),
                         ),
-                        title: Text(snapshot.data[index].company),
+                        title: Text(filteredJobs[index].company),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              snapshot.data[index].position,
+                              filteredJobs[index].position,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
                             Row(
                               children: [
                                 Text(formatDateTime(
-                                    snapshot.data[index].postedOn)),
+                                    filteredJobs[index].postedOn)),
                                 SizedBox(
                                   width: 20,
                                 ),
-                                Text(snapshot.data[index].timing),
+                                Text(filteredJobs[index].timing),
                                 SizedBox(
                                   width: 20,
                                 ),
-                                Text(snapshot.data[index].location)
+                                Text(filteredJobs[index].location)
                               ],
                             ),
                           ],
@@ -121,5 +129,15 @@ class _JobTileState extends State<JobTile> {
         return const CircularProgressIndicator();
       },
     );
+  }
+
+
+  bool jobContainsSelectedKeywords(Job job, List<String> selectedKeywords) {
+    for (final keyword in selectedKeywords) {
+      if (!job.keywords!.contains(keyword)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

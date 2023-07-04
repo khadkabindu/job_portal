@@ -54,7 +54,7 @@ class _JobChipState extends State<JobChip> {
                     widget.jobTags[index],
                     style: TextStyle(
                       color:
-                          isSelected[index] ? Colors.white : Color(0xff6A9EA0),
+                      isSelected[index] ? Colors.white : Color(0xff6A9EA0),
                     ),
                   ),
                 ),
