@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   json_annotation: ^4.8.1
+  firebase_core: ^2.14.0
+
 
 
 
