@@ -15,7 +15,7 @@ class JobTile extends StatefulWidget {
 class _JobTileState extends State<JobTile> {
   bool jobContainsSelectedKeywords(Job job, List<String> selectedKeywords) {
     for (final keyword in selectedKeywords) {
-      if (!job.keywords!.contains(keyword)) {
+      if (!job.keywords.contains(keyword)) {
         return false;
       }
     }

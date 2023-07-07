@@ -20,7 +20,6 @@ class _JobChipState extends State<JobChip> {
   void initState() {
     super.initState();
     tags = widget.jobTags;
-
     isSelected = List<bool>.filled(20, false);
   }
 
@@ -65,3 +64,4 @@ class _JobChipState extends State<JobChip> {
     );
   }
 }
+
