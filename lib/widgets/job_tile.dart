@@ -28,7 +28,17 @@ class _JobTileState extends State<JobTile> {
     final List<Job> filteredJobs = widget.jobs
         .where((job) => jobContainsSelectedKeywords(job, selectedValues))
         .toList();
-
+    if (filteredJobs.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(10),
+        child: const Center(
+          child: Text(
+            "No Jobs found with the selected keywords",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    }
     return Expanded(
       child: ListView.builder(
           itemCount: filteredJobs.length,
@@ -87,7 +97,8 @@ class _JobTileState extends State<JobTile> {
                       ),
                       Row(
                         children: [
-                          Text(DateTimeUtil.formatDateTime(filteredJobs[index].postedOn)),
+                          Text(DateTimeUtil.formatDateTime(
+                              filteredJobs[index].postedOn)),
                           SizedBox(
                             width: 20,
                           ),
