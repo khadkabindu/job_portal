@@ -27,7 +27,3 @@ In order to filter the jobs posts all the selected keywords should match the key
 ## Improvements
 In this current version of app, I am rendering all the listed keywords in a scrollable list view but for large keywords this process will not be user friendly because the user have to scroll to the end of the list view to find the keyword that they are searching for, instead of this we can implement it using a Dropdown menu with the search feature that contains the job tags like 
 <a href= "https://remoteok.com/"> Remote Ok</a>.
-
-
-------------------------------------------
-Thank you for taking time to review my assignment. I would love to have your suggestions and feedbacks on this.
